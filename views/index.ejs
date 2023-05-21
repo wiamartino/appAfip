@@ -7,12 +7,9 @@
   <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.0.0-beta.4/dist/css/bootstrap-material-design.min.css"
     integrity="sha384-R80DC0KVBO4GSTw+wZ5x2zn2pu4POSErBkf8/fSFhPXHxvHJydT0CSgAP2Yo2r4I" crossorigin="anonymous">
 
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-    crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
-    crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/bootstrap-material-design@4.0.0-beta.4/dist/js/bootstrap-material-design.js"
-    integrity="sha384-3xciOSDAlaXneEmyOo0ME/2grfpqzhhTcM4cE32Ce9+8DW/04AGoTACzQpphYGYe" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.4/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.4.0/dist/js/bootstrap.min.js"></script>
   <script>
     $(document).ready(function () { $('body').bootstrapMaterialDesign(); });
   </script>
@@ -20,50 +17,65 @@
 <body>
   <div class="container">
     <div class="row">
-      <div class="col-sm-12 col-md-12 col-lg-6">
-        <div class="card">
-          <div class="card-block">
+      <div class="col-sm-12 col-md-6">
+        <div class="card mb-3">
+          <div class="card-body">
             <h4 class="card-title">Generar privada y CSR</h4>
             <form id='getcertsForm' action='/getCerts' method="POST" class="pure-form pure-form-stacked">
-              <input type="text" name="param_c" class="form-control" placeholder="C=" required value='AR' readonly />
-              <input type="text" name="param_o" class="form-control" placeholder="O=" required />
-              <input type="text" name="param_cn" class="form-control" placeholder="CN=" required />
-              <input type="number" name="param_snumber" class="form-control" placeholder="serialNumber / CUIT" required />
-              <input type='submit' class="btn btn-raised btn-primary" value='Generar' />
+              <div class="mb-3">
+                <input type="text" name="param_c" class="form-control" placeholder="C=" required value='AR' readonly />
+              </div>
+              <div class="mb-3">
+                <input type="text" name="param_o" class="form-control" placeholder="O=" required />
+              </div>
+              <div class="mb-3">
+                <input type="text" name="param_cn" class="form-control" placeholder="CN=" required />
+              </div>
+              <div class="mb-3">
+                <input type="number" name="param_snumber" class="form-control" placeholder="serialNumber / CUIT" required />
+              </div>
+              <div class="text-center">
+                <input type="submit" class="btn btn-primary" value="Generar" />
+              </div>
             </form>
           </div>
         </div>
       </div> 
       
-      <div class="col-sm-12 col-md-12 col-lg-6">
-        <div class="card">
-          <div class="card-block">
+      <div class="col-sm-12 col-md-6">
+        <div class="card mb-3">
+          <div class="card-body">
             <h4 class="card-title">Generar P12</h4>
             <form id='getP12Form' action='/getP12' method="POST" enctype="multipart/form-data">
-              <input type="text" name="userp12" class="form-control" placeholder="Usuario" required />
-              <input type="password" name="passp12" class="form-control" placeholder="Password" required />
-              <span class="form-control">Privada
-                <input type="file" name="privada" accept=".key" required />
-              </span>
-              <span class="form-control">Archivo CRT
-                <input type="file" name="certCRT" accept=".crt" required />
-              </span>
-              <input type='submit' class="btn btn-raised btn-primary" value='Generar' />
+              <div class="mb-3">
+                <input type="text" name="userp12" class="form-control" placeholder="Usuario" required />
+              </div>
+              <div class="mb-3">
+                <input type="password" name="passp12" class="form-control" placeholder="Password" required />
+              </div>
+              <div class="mb-3">
+                <label for="privada" class="form-label">Privada</label>
+                <input type="file" name="privada" class="form-control" accept=".key" required />
+              </div>
+              <div class="mb-3">
+                <label for="certCRT" class="form-label">Archivo CRT</label>
+                <input type="file" name="certCRT" class="form-control" accept=".crt" required />
+              </div>
+              <div class="text-center">
+                <input type="submit" class="btn btn-primary" value="Generar" />
+              </div>
             </form>
           </div>
         </div>
       </div> 
-
-
     </div>
   </div>
 
   <div class="card card-outline-primary mb-4 text-center">
-    <div class="card-block">
+    <div class="card-body">
       <h4 class="card-title">Información</h4>
-      <p>Quejas, Dudas, Recomendaciones: walteriamartino @ gmail.com</p>
+      <p>Quejas, Dudas, Recomendaciones: walteriamartino@gmail.com</p>
     </div>
   </div>
-
 </body>
 </html>
