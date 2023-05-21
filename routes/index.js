@@ -25,20 +25,24 @@ router.post('/getCerts', function (req, res, next) {
   csr.setSubject([
     {
       name: 'countryName',
-      value: req.body.param_c
+      value: req.body.param_c,
+      type: 'countryName'
     },
     {
       name: 'organizationName',
-      value: req.body.param_o
+      value: req.body.param_o,
+      type: 'organizationName'
     },
     {
       name: 'commonName',
-      value: req.body.param_cn
+      value: req.body.param_cn,
+      type: 'commonName'
     },
 
     {
       name: 'serialName',
-      value: cuit
+      value: cuit,
+      type: 'serialName'
     }
 
   ]);
