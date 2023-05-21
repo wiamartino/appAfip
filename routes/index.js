@@ -1,108 +1,67 @@
-var express = require('express');
-var router = express.Router();
-var forge = require('node-forge');
-var stream = require('stream');
-var archiver = require('archiver');
+const express = require('express');
+const router = express.Router();
+const forge = require('node-forge');
+const archiver = require('archiver');
 
-
-
-
-/* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/', (req, res) => {
   res.render('index');
 });
 
-
-router.post('/getCerts', function (req, res, next) {
-
-  var keys = forge.pki.rsa.generateKeyPair(2048);
-  var csr = forge.pki.createCertificationRequest();
-  var cuit = 'CUIT ' + req.body.param_snumber;
+router.post('/getCerts', (req, res) => {
+  const keys = forge.pki.rsa.generateKeyPair(2048);
+  const csr = forge.pki.createCertificationRequest();
+  const cuit = 'CUIT ' + req.body.param_snumber;
 
   csr.publicKey = keys.publicKey;
 
-
   csr.setSubject([
-    {
-      name: 'countryName',
-      value: req.body.param_c,
-      type: 'countryName'
-    },
-    {
-      name: 'organizationName',
-      value: req.body.param_o,
-      type: 'organizationName'
-    },
-    {
-      name: 'commonName',
-      value: req.body.param_cn,
-      type: 'commonName'
-    },
-
-    {
-      name: 'serialName',
-      value: cuit,
-      type: 'serialName'
-    }
-
+    { name: 'countryName', value: req.body.param_c, type: 'countryName' },
+    { name: 'organizationName', value: req.body.param_o, type: 'organizationName' },
+    { name: 'commonName', value: req.body.param_cn, type: 'commonName' },
+    { name: 'serialName', value: cuit, type: 'serialName' }
   ]);
 
   csr.sign(keys.privateKey);
 
-  var verified = csr.verify();
+  const pem = forge.pki.certificationRequestToPem(csr);
+  const privadapem = forge.pki.privateKeyToPem(keys.privateKey);
 
-  var pem = forge.pki.certificationRequestToPem(csr);
+  const archive = archiver('zip');
 
-  var privadapem = forge.pki.privateKeyToPem(keys.privateKey);
-
-  // ARCHIVOS
-  var archive = archiver('zip');
-
-  archive.on('error', function (err) {
+  archive.on('error', (err) => {
     res.status(500).send({ error: err.message });
   });
 
-
-  archive.on('end', function () {
+  archive.on('end', () => {
     console.log('Archive wrote %d bytes', archive.pointer());
   });
 
-  var nombreZip = 'certificados - ' + req.body.param_o + '.zip';
+  const nombreZip = `certificados - ${req.body.param_o}.zip`;
 
   res.attachment(nombreZip);
-
   archive.pipe(res);
   archive.append(privadapem, { name: 'privada.key' });
   archive.append(pem, { name: 'certificado.csr' });
   archive.finalize();
-
 });
 
+router.post('/getP12', (req, res) => {
+  const privateKey = forge.pki.privateKeyFromPem(req.files.privada.data.toString());
+  const cert = forge.pki.certificateFromPem(req.files.certCRT.data.toString());
 
-router.post('/getP12', function (req, res, next) {
-
-// Obtengo archivos 
-  var privateKey = forge.pki.privateKeyFromPem(req.files.privada.data.toString());
-  var cert = forge.pki.certificateFromPem(req.files.certCRT.data.toString());
-
-  var p12Asn1 = forge.pkcs12.toPkcs12Asn1(
+  const p12Asn1 = forge.pkcs12.toPkcs12Asn1(
     privateKey, cert, req.body.passp12,
-    { friendlyName: req.body.userp12, algorithm: '3des' });
-    
-  var p12Der = forge.asn1.toDer(p12Asn1).getBytes();
-  var p12b64 = forge.util.encode64(p12Der);
+    { friendlyName: req.body.userp12, algorithm: '3des' }
+  );
 
-  var nombreArchivo = req.body.userp12 + "+store.p12";
+  const p12Der = forge.asn1.toDer(p12Asn1).getBytes();
+  const p12b64 = forge.util.encode64(p12Der);
+  const nombreArchivo = `${req.body.userp12}+store.p12`;
+  const archivo = Buffer.from(p12b64, 'base64');
 
-  var archivo = Buffer.from(p12b64, "base64");
-  var readStream = new stream.PassThrough();
-  readStream.end(archivo);
-
-  res.setHeader('Content-type', "application/octet-stream");
-  res.setHeader("Content-Disposition", "filename=" + nombreArchivo);
-  readStream.pipe(res);
- 
+  res.setHeader('Content-type', 'application/octet-stream');
+  res.setHeader('Content-Disposition', `filename=${nombreArchivo}`);
+  res.send(archivo);
 });
-
 
 module.exports = router;
